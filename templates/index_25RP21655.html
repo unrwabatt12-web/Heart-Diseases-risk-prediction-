@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge.healthy {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-badge.unhealthy {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .form-container {
+            padding: 40px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        label i {
+            color: #667eea;
+            width: 18px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #764ba2;
+            z-index: 1;
+            font-size: 16px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        select {
+            padding-left: 44px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23764ba2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 18px;
+        }
+
+        input::placeholder {
+            color: #999;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background-color: white;
+            transform: translateY(-1px);
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-width: 300px;
+        }
+
+        .btn-secondary {
+            padding: 18px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:active, .btn-secondary:active {
+            transform: translateY(-1px);
+        }
+
+        .loading, .error {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 10px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid #ffcdd2;
+        }
+
+        .error.show {
+            display: flex;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .success.show {
+            display: flex;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+            padding-left: 32px;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 500px;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+        }
+
+        .result-header i {
+            color: #667eea;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 992px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .prediction-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .prediction-box {
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .prediction-box.disease {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .prediction-box.no-disease {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .prediction-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .prediction-text {
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .confidence {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .timestamp {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .probabilities {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .probabilities-header {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .probabilities-header i {
+            color: #764ba2;
+        }
+
+        .prob-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .prob-item:last-child {
+            border-bottom: none;
+        }
+
+        .prob-label {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .prob-bar-container {
+            flex: 1.5;
+            margin: 0 25px;
+        }
+
+        .prob-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prob-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 6px;
+        }
+
+        .prob-value {
+            font-size: 17px;
+            color: #667eea;
+            font-weight: 600;
+            min-width: 65px;
+            text-align: right;
+        }
+
+        .back-to-form {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-back {
+            padding: 15px 40px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Scroll to results button */
+        .scroll-to-results {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .scroll-to-results:hover {
+            background: #5a6fd8;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .scroll-to-results.show {
+            display: flex;
+        }
+
+        /* Scrollbar styling */
+        .form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-container, .results-section {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn-primary {
+                min-width: auto;
+                width: 100%;
+                padding: 16px;
+            }
+            
+            .result-header {
+                font-size: 24px;
+            }
+            
+            .prediction-text {
+                font-size: 24px;
+            }
+            
+            .scroll-to-results {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            input, select {
+                padding: 12px 12px 12px 40px;
+                font-size: 14px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+            
+            .prediction-icon {
+                font-size: 48px;
+            }
+            
+            .prob-bar-container {
+                margin: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> Heart Disease Prediction System</h1>
+            <p>Advanced Machine Learning-based Cardiovascular Health Assessment</p>
+            <div class="status-badge" id="statusBadge">
+                <i class="fas fa-circle"></i>
+                <span>Checking...</span>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-container">
+            <form id="predictionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="age"><i class="fas fa-birthday-cake"></i> Age (years)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="number" id="age" name="age" min="1" max="120" required 
+                                   placeholder="Enter your age (e.g., 52)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sex"><i class="fas fa-venus-mars"></i> Sex</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <select id="sex" name="sex" required>
+                                <option value="">Select gender...</option>
+                                <option value="1">Male</option>
+                                <option value="0">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cp"><i class="fas fa-heart"></i> Chest Pain Type</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-stethoscope"></i>
+                            <select id="cp" name="cp" required>
+                                <option value="">Select chest pain type...</option>
+                                <option value="0">Typical Angina</option>
+                                <option value="1">Atypical Angina</option>
+                                <option value="2">Non-anginal Pain</option>
+                                <option value="3">Asymptomatic</option>
+                            </select>
+                        </div>
+                        <div class="info-text">0: Typical Angina, 1: Atypical, 2: Non-anginal, 3: Asymptomatic</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trestbps"><i class="fas fa-tachometer-alt"></i> Resting Blood Pressure</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heartbeat"></i>
+                            <input type="number" id="trestbps" name="trestbps" min="40" max="200" required 
+                                   placeholder="Normal range: 90-120 mmHg (e.g., 125)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="chol"><i class="fas fa-vial"></i> Serum Cholesterol</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-flask"></i>
+                            <input type="number" id="chol" name="chol" min="100" max="600" required 
+                                   placeholder="Normal: <200 mg/dl (e.g., 212)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fbs"><i class="fas fa-syringe"></i> Fasting Blood Sugar > 120 mg/dl</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-apple-alt"></i>
+                            <select id="fbs" name="fbs" required>
+                                <option value="">Select option...</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="restecg"><i class="fas fa-wave-square"></i> Resting ECG Results</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heartbeat"></i>
+                            <select id="restecg" name="restecg" required>
+                                <option value="">Select ECG result...</option>
+                                <option value="0">Normal</option>
+                                <option value="1">ST-T Abnormality</option>
+                                <option value="2">LV Hypertrophy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thalach"><i class="fas fa-running"></i> Max Heart Rate Achieved</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heart"></i>
+                            <input type="number" id="thalach" name="thalach" min="40" max="250" required 
+                                   placeholder="Maximum during exercise (e.g., 168 bpm)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exang"><i class="fas fa-dumbbell"></i> Exercise Induced Angina</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-running"></i>
+                            <select id="exang" name="exang" required>
+                                <option value="">Select option...</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="oldpeak"><i class="fas fa-chart-line"></i> ST Depression (oldpeak)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-chart-area"></i>
+                            <input type="number" id="oldpeak" name="oldpeak" step="0.1" min="0" max="10" required 
+                                   placeholder="ST depression induced by exercise (e.g., 1.0)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slope"><i class="fas fa-chart-line"></i> ST Slope</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-mountain"></i>
+                            <select id="slope" name="slope" required>
+                                <option value="">Select slope type...</option>
+                                <option value="0">Upsloping</option>
+                                <option value="1">Flat</option>
+                                <option value="2">Downsloping</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ca"><i class="fas fa-route"></i> Major Vessels (0-4)</label>
+                        <div class="input-with-icon">
+                              <i class="fas fa-road"></i>
+                        <select id="ca" name="ca" required>
+                          <option value="">Select number of vessels...</option>
+                          <option value="0" class="risk-green">0 vessels </option>
+                          <option value="1" class="risk-lightgreen">1 vessel </option>
+                          <option value="2" class="risk-orange">2 vessels </option>
+                          <option value="3" class="risk-red">3 vessels </option>
+                          <option value="4" class="risk-darkred">4 vessels </option>
+                        </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thal"><i class="fas fa-dna"></i> Thalassemia Type</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-microscope"></i>
+                            <select id="thal" name="thal" required>
+                                <option value="">Select thalassemia type...</option>
+                                <option value="0">Normal</option>
+                                <option value="1">Fixed Defect</option>
+                                <option value="2">Reversible Defect</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-brain"></i> Predict Heart Disease Risk
+                        </button>
+                    </div>
+
+                    <div class="loading" id="loading">
+                        <span class="spinner"></span>Analyzing medical parameters...
+                    </div>
+
+                    <div class="error" id="error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="error-message"></span>
+                    </div>
+
+                    <div class="success" id="success">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="success-message"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section (Initially Hidden) -->
+        <div class="results-section" id="resultsSection">
+            <div class="result-header">
+                <i class="fas fa-clipboard-check"></i> Prediction Results
+            </div>
+            
+            <div class="results-container">
+                <div class="prediction-card">
+                    <div id="predictionBox">
+                        <!-- Prediction result will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="probabilities">
+                    <div class="probabilities-header">
+                        <i class="fas fa-chart-pie"></i> Probability Distribution
+                    </div>
+                    <div id="probabilities">
+                        <!-- Probability bars will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="back-to-form">
+                <button type="button" class="btn-back" onclick="scrollToForm()">
+                    <i class="fas fa-arrow-up"></i> Back to Form
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Results Button -->
+    <button class="scroll-to-results" id="scrollToResultsBtn" onclick="scrollToResults()">
+        <i class="fas fa-chart-bar"></i> View Results
+    </button>
+
+    <script>
+        // Check backend health status
+        async function checkHealth() {
+            const statusBadge = document.getElementById('statusBadge');
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    statusBadge.className = 'status-badge healthy';
+                    statusBadge.innerHTML = '<i class="fas fa-circle"></i><span>System Ready</span>';
+                    showSuccess('Heart Disease Prediction System is ready');
+                } else {
+                    statusBadge.className = 'status-badge unhealthy';
+                    statusBadge.innerHTML = '<i class="fas fa-circle"></i><span>System Issues</span>';
+                    showError('Model not loaded. Predictions may not work correctly.');
+                }
+            } catch (error) {
+                statusBadge.className = 'status-badge unhealthy';
+                statusBadge.innerHTML = '<i class="fas fa-circle"></i><span>Connection Error</span>';
+                showError('Cannot connect to the prediction server');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const success = document.getElementById('success');
+            const errorMessage = document.getElementById('error-message');
+            const resultsSection = document.getElementById('resultsSection');
+            const scrollToResultsBtn = document.getElementById('scrollToResultsBtn');
+            
+            loading.style.display = 'block';
+            error.classList.remove('show');
+            success.classList.remove('show');
+            
+            try {
+                // Collect form data
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                // Convert all values to numbers
+                Object.keys(data).forEach(key => {
+                    data[key] = parseFloat(data[key]);
+                });
+                
+                // Send prediction request
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Prediction failed');
+                }
+                
+                // Display results
+                displayResult(result);
+                
+                // Show results section
+                resultsSection.classList.add('show');
+                
+                // Show scroll to results button
+                scrollToResultsBtn.classList.add('show');
+                
+                // Scroll to results after a short delay
+                setTimeout(() => {
+                    scrollToResults();
+                }, 500);
+                
+                showSuccess('Analysis completed successfully');
+                
+            } catch (err) {
+                errorMessage.textContent = err.message;
+                error.classList.add('show');
+                console.error('Prediction error:', err);
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        // Display prediction result
+        function displayResult(result) {
+            const predictionBox = document.getElementById('predictionBox');
+            const probabilitiesDiv = document.getElementById('probabilities');
+
+            // Guard against API errors
+            if (!result || result.error) {
+                predictionBox.innerHTML = `
+                    <div class="prediction-box disease">
+                        <i class="fas fa-exclamation-triangle prediction-icon"></i>
+                        <div class="prediction-text">
+                            ${result?.error || "Prediction failed"}
+                        </div>
+                        <div class="timestamp">Error occurred</div>
+                    </div>
+                `;
+                probabilitiesDiv.innerHTML = "";
+                return;
+            }
+
+            const label = result.prediction || result.predicted_class_label || "Unknown";
+            const confidence = result.confidence || (result.confidence_percentage || 0);
+            
+            // Determine disease category based on label
+            const diseaseClasses = ['immediate danger', 'severe', 'mild', 'very mild'];
+            const isDisease = diseaseClasses.some(diseaseClass => 
+                label.toLowerCase().includes(diseaseClass) || 
+                diseaseClass.includes(label.toLowerCase())
+            );
+            
+            const noDiseaseClasses = ['no disease', 'normal', 'healthy'];
+            const isNoDisease = noDiseaseClasses.some(noDiseaseClass => 
+                label.toLowerCase().includes(noDiseaseClass) || 
+                noDiseaseClass.includes(label.toLowerCase())
+            );
+
+            const boxClass = isDisease ? 'disease' : (isNoDisease ? 'no-disease' : 'disease');
+            const icon = isDisease ? 'fas fa-exclamation-triangle' : 
+                         (isNoDisease ? 'fas fa-check-circle' : 'fas fa-exclamation-circle');
+
+            predictionBox.innerHTML = `
+                <div class="prediction-box ${boxClass}">
+                    <i class="${icon} prediction-icon"></i>
+                    <div class="prediction-text">${label}</div>
+                    <div class="confidence">Confidence: ${confidence.toFixed(1)}%</div>
+                    <div class="timestamp">Analysis completed: ${new Date().toLocaleString()}</div>
+                </div>
+            `;
+
+            // Probability bars
+            let probHTML = '';
+            if (result.probabilities) {
+                for (const [className, probability] of Object.entries(result.probabilities)) {
+                    const probValue = typeof probability === 'number' ? probability : parseFloat(probability);
+                    probHTML += `
+                        <div class="prob-item">
+                            <span class="prob-label">${className}</span>
+                            <div class="prob-bar-container">
+                                <div class="prob-bar">
+                                    <div class="prob-bar-fill" style="width:${probValue}%"></div>
+                                </div>
+                            </div>
+                            <span class="prob-value">${probValue.toFixed(1)}%</span>
+                        </div>
+                    `;
+                }
+            } else if (result.class_probabilities) {
+                // Alternative format
+                for (const [className, probability] of Object.entries(result.class_probabilities)) {
+                    const probValue = typeof probability === 'number' ? probability : parseFloat(probability);
+                    probHTML += `
+                        <div class="prob-item">
+                            <span class="prob-label">${className}</span>
+                            <div class="prob-bar-container">
+                                <div class="prob-bar">
+                                    <div class="prob-bar-fill" style="width:${probValue}%"></div>
+                                </div>
+                            </div>
+                            <span class="prob-value">${probValue.toFixed(1)}%</span>
+                        </div>
+                    `;
+                }
+            }
+            probabilitiesDiv.innerHTML = probHTML;
+
+            // Animate bars
+            setTimeout(() => {
+                document.querySelectorAll('.prob-bar-fill').forEach(bar => {
+                    bar.style.width = bar.style.width;
+                });
+            }, 100);
+        }
+
+        // Scroll to results section
+        function scrollToResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.classList.contains('show')) {
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Scroll to form section
+        function scrollToForm() {
+            const formContainer = document.querySelector('.form-container');
+            formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Show/hide scroll to results button based on scroll position
+        window.addEventListener('scroll', function() {
+            const scrollToResultsBtn = document.getElementById('scrollToResultsBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            if (resultsSection.classList.contains('show')) {
+                const formBottom = document.querySelector('.form-container').getBoundingClientRect().bottom;
+                const viewportHeight = window.innerHeight;
+                
+                if (formBottom < viewportHeight * 0.5) {
+                    scrollToResultsBtn.classList.add('show');
+                } else {
+                    scrollToResultsBtn.classList.remove('show');
+                }
+            }
+        });
+
+        // Helper functions
+        function showError(message) {
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('error-message');
+            const success = document.getElementById('success');
+            
+            success.classList.remove('show');
+            errorMessage.textContent = message;
+            error.classList.add('show');
+            
+            setTimeout(() => {
+                error.classList.remove('show');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const success = document.getElementById('success');
+            const successMessage = document.getElementById('success-message');
+            const error = document.getElementById('error');
+            
+            error.classList.remove('show');
+            successMessage.textContent = message;
+            success.classList.add('show');
+            
+            setTimeout(() => {
+                success.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkHealth();
+            
+            // Auto-focus first field
+            document.getElementById('age').focus();
+            
+            // Add input validation styling
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.checkValidity()) {
+                        this.style.borderColor = '#4CAF50';
+                    } else {
+                        this.style.borderColor = '#ff4444';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = '#e0e0e0';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
