@@ -19,6 +19,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
+@app.route("/favicon.ico")
+def favicon():
+    # /vercel.svg is automatically served when included in the public/** directory.
+    return redirect("/vercel.svg", code=307)
+
 # Load model and metadata
 MODEL_PATH = 'deployment/heart_disease_best_model.pkl'
 FEATURES_PATH = 'deployment/feature_columns.txt'
