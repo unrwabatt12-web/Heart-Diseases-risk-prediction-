@@ -1,0 +1,26 @@
+Model Deployment Demonstration
+=================================
+
+1. Training codebase
+
+2. Show all steps of model training code.
+
+3.Flask API running on PC
+4. Virtual environment 
+
+The terminal window must be visible.
+===================================
+
+1. Demonstrate that the Flask API is running locally.
+
+2. Frontend (index_regno.html)
+
+3. Show the frontend sending data to the API.
+
+4. Display the prediction/results returned by the API.
+
+
+Comparison of results
+========================
+
+1. Compare frontend results with the model results.
