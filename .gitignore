@@ -1,0 +1,17 @@
+# Ignore virtual environment / libraries
+lib/
+Lib/
+site-packages/
+venv/
+.venv/
+
+# Ignore videos
+*.mp4
+*.avi
+*.mov
+
+# Ignore large ML models
+*.h5
+*.pb
+*.pt
+*.pth
